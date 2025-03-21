@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Chuyển hướng từ /product/tên-san-pham thành product.php?slug=tên-san-pham
+RewriteRule ^product/([a-zA-Z0-9-]+)$ product.php?slug=$1 [L,QSA]

@@ -1,0 +1,342 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+body{
+    display:  flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #25252b;
+    color: #fff;
+    background: url('../images/bn-login.jpg');
+}
+.wrapper{
+    position: relative;
+    width: 750px;
+    height: 450px;
+    background-color: transparent;
+    border: 2px solid  #ff2770;
+    box-shadow: 0 0 25px #ff2770;
+    overflow: hidden;
+}
+.wrapper .form-box{
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.wrapper .form-box.register{
+    right: 0;
+    padding: 0 40px 0 60px;
+    pointer-events: none;
+}
+.wrapper .form-box.register .animation{
+    transform: translateX(120%);
+    opacity: 0;
+    filter: blur(10px);
+    transition: .7s ease;
+    transition-delay: calc(.1s * var(--j));
+}
+.wrapper.active .form-box.register{
+    pointer-events: auto;
+}
+.wrapper.active .form-box.register .animation{
+    transform: translateX(0);
+    opacity: 1;
+    filter: blur(0);
+    transition-delay: calc(.1s * var(--i));
+}
+.wrapper .form-box.login{
+    left: 0;
+    padding: 0 60px 0 40px;
+    
+}
+.wrapper .form-box.login .animation{
+    transform: translateX(0);
+    opacity: 1;
+    filter: blur(0);
+    transition: .7s ease;
+    transition-delay: calc(.1s * var(--j));
+}
+.wrapper.active .form-box.login .animation{
+    transform: translateX(-120%);
+    opacity: 0;
+    filter: blur(10px);
+    transition-delay: calc(.1s * var(--i));
+}
+.form-box h2{
+    font-size: 30px;
+    text-align: center;
+}
+.form-box .input-box{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin: 25px 0;
+}
+.input-box input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid #fff;
+    padding-right: 23px;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 400;
+    transition: .5s;
+}
+.input-box input:focus,
+.input-box input:valid{
+    border-bottom: 2px solid #ff2770;
+}
+.input-box label{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    pointer-events: none;
+    transition: .5s;
+}
+.input-box input:focus~label,
+.input-box input:valid~label{
+    top: -5px;
+    color: #ff2770;
+}
+.input-box i{
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #fff;
+    transition: .5s;
+}
+.input-box input:focus~i,
+.input-box input:valid~i{
+    /* top: -5px; */
+    color: #ff2770;
+}
+.btn{
+    position: relative;
+    width: 100%;
+    height: 45px;
+    background: transparent;
+    border: 2px solid #ff2770;
+    outline: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 600;
+    z-index: 1;
+    overflow: hidden;
+}
+.btn::before{
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 300%;
+    background: linear-gradient(#25252b, #ff2770, #25252b, #ff2770);
+    z-index: -1;
+    transition: .5s;
+}
+.btn:hover::before {
+    top: 0;
+}
+.form-box .logreg-link{
+    font-size: 15px;
+    color: #fff;
+    text-align: center;
+    margin: 20px 0 10px;
+}
+.logreg-link p a{
+    color: #ff2770;
+    text-decoration: none;
+    font-weight: 600;
+}
+.logreg-link p a:hover{
+    text-decoration: underline;
+}
+.wrapper .info-text{
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.wrapper .info-text.login{
+    right: 0;
+    text-align: right;
+    padding: 0 40px 60px 150px;
+}
+.wrapper .info-text.login .animation{
+    transform: translateX(0);
+    opacity: 1;
+    filter: blur(0);
+    transition: .7s ease;
+    transition-delay: calc(.1s * var(--j));
+}
+.wrapper.active .info-text.login .animation{
+    transform: translateX(120%);
+    opacity: 0;
+    filter: blur(10px);
+    transition-delay: calc(.1s * var(--i));
+}
+.wrapper .info-text.register{
+    left: 0;
+    text-align: left;
+    padding: 0 150px 60px 40px;
+    pointer-events: none;
+}
+.wrapper.active .info-text.register{
+    pointer-events: auto;
+}
+.wrapper .info-text.register .animation{
+    transform: translateX(-120%);
+    opacity: 0;
+    filter: blur(10px);
+    transition: .7s ease;
+    transition-delay: calc(.1s * var(--j));
+}
+.wrapper.active .info-text.register .animation{
+    transform: translateX(0);
+    opacity: 1;
+    filter: blur(0);
+    transition-delay: calc(.1s * var(--i));
+}
+.info-text h2{
+    font-size: 36px;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+.info-text p{
+    font-size: 16px;
+}
+.wrapper .bg-animate{
+    position: absolute;
+    top: -4px;
+    right: 0;
+    width: 850px;
+    height: 600px;
+    background: linear-gradient(45deg, #25252b, #ff2770);
+    border-bottom:  3px solid #ff2770;
+    transform:  rotate(10deg) skewY(40deg);
+    transform-origin: bottom right;
+    transition: 1.5s ease;
+    transition-delay: 1.6s;
+}
+.wrapper.active .bg-animate{
+    transform:  rotate(0) skewY(0);
+    transition-delay: .5s;
+}
+.wrapper .bg-animate2{
+    position: absolute;
+    top: 100%;
+    left: 250px;
+    width: 850px;
+    height: 700px;
+    background: #25252b;
+    border-top:  3px solid #ff2770;
+    transform:  rotate(0) skewY(0);
+    transform-origin: bottom left;
+    transition: 1.5s ease;
+    transition-delay: .5s;
+}
+.wrapper.active .bg-animate2{
+    transform:  rotate(-11deg) skewY(-41deg);
+    transition-delay: 1.2s;
+}
+
+#show-password.active {
+    color: #ff2770; /* Màu khi mật khẩu đang được hiển thị */
+}
+
+/* Nền mờ khi popup hiển thị */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Hộp popup */
+.popup-box {
+    background: white;
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    padding: 20px;
+    position: relative;
+}
+
+/* Header của popup */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+/* Tiêu đề popup */
+.popup-header h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* Nút đóng popup */
+.popup-close {
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+.popup-close:hover {
+    color: #333;
+}
+
+/* Nội dung popup */
+.popup-body {
+    margin: 15px 0;
+    font-size: 16px;
+}
+
+/* Nút trong popup */
+.popup-footer button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.popup-footer button:hover {
+    background: #218838;
+}
