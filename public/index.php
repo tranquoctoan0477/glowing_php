@@ -310,6 +310,7 @@
 
                 echo '<div class="card-actions">';
                 echo '<button class="action-btn" aria-label="add to cart"><ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon></button>';
+
                 echo '<button class="action-btn" aria-label="add to whishlist"><ion-icon name="star-outline" aria-hidden="true"></ion-icon></button>';
                 echo '<button class="action-btn" aria-label="compare"><ion-icon name="repeat-outline" aria-hidden="true"></ion-icon></button>';
                 echo '</div>'; // card-actions
@@ -408,7 +409,46 @@
         </div>
       </section>
 
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Sự kiện cho button action-btn (trang index.php)
+          const addToCartBtns = document.querySelectorAll('.action-btn');
+          addToCartBtns.forEach(function (button) {
+            button.addEventListener('click', function () {
+              const productElement = button.closest('.shop-card');  // Tìm thẻ chứa sản phẩm
+              const productId = productElement.getAttribute('data-id'); // Lấy ID sản phẩm từ data-id
+              const productName = productElement.querySelector('.card-title').innerText;  // Lấy tên sản phẩm
+              const productPrice = productElement.querySelector('.span').innerText.replace(' VNĐ', '').replace(',', ''); // Giá sản phẩm
+              const productQuantity = 1; // Mặc định số lượng là 1 (có thể thay đổi sau)
 
+              const product = {
+                id: productId,
+                name: productName,
+                price: parseFloat(productPrice),
+                quantity: parseInt(productQuantity)
+              };
+
+              addToCart(product); // Gọi hàm addToCart
+            });
+          });
+        });
+
+
+        // Hàm thêm sản phẩm vào giỏ hàng
+        function addToCart(product) {
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'api/add_to_cart.php', true);
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              // Xử lý phản hồi từ server (cập nhật giỏ hàng)
+              location.reload();  // Tải lại trang để cập nhật giỏ hàng
+            }
+          };
+          xhr.send(`id=${product.id}&name=${encodeURIComponent(product.name)}&price=${product.price}&quantity=${product.quantity}`);
+        }
+
+      </script>
 
 
 

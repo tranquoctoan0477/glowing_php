@@ -50,6 +50,15 @@ function send() {
     console.log(arr);
 }
 
+document.getElementById("register-form").addEventListener("submit", function(event) {
+    let password = document.getElementById("register-password").value;
+    let confirmPassword = document.getElementById("register-confirm-password").value;
+
+    if (password !== confirmPassword) {
+        alert("Mật khẩu không trùng khớp!");
+        event.preventDefault(); // Ngăn form gửi dữ liệu
+    }
+});
 
 
 

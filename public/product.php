@@ -47,6 +47,12 @@ if ($product) {
   <link rel="preload" as="image" href="./assets/images/hero-banner-1.jpg">
   <link rel="preload" as="image" href="./assets/images/hero-banner-2.jpg">
   <link rel="preload" as="image" href="./assets/images/hero-banner-3.jpg">
+  <!-- 
+    - google font link
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -95,14 +101,6 @@ if ($product) {
             <h2 id="product-price"><?= $productPrice; ?></h2>
             <h3 id="stock-quantity"><strong>Tồn kho:</strong> <?= $stockQuantity; ?></h3>
             <h3 id="sales-count"><strong>Đã bán:</strong> <?= $salesCount; ?></h3>
-            <select>
-              <option>Select Size</option>
-              <option>S</option>
-              <option>M</option>
-              <option>L</option>
-              <option>XL</option>
-              <option>XXL</option>
-            </select>
             <input type="number" value="1">
             <button class="normal">Add To Cart</button>
             <h4>Product Details</h4>
@@ -145,6 +143,44 @@ if ($product) {
     </div>
   </section>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Sự kiện cho button normal (trang product.php)
+      const addToCartBtn = document.querySelector('.normal');
+      if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', function () {
+          const productId = <?php echo $product->getId(); ?>;  // Lấy ID sản phẩm từ PHP
+          const productName = document.querySelector('#product-name').innerText;
+          const productPrice = document.querySelector('#product-price').innerText.replace(' VNĐ', '').replace(',', '');
+          const productQuantity = document.querySelector('input[type="number"]').value;
+
+          const product = {
+            id: productId,
+            name: productName,
+            price: parseFloat(productPrice),
+            quantity: parseInt(productQuantity)
+          };
+
+          addToCart(product); // Gọi hàm addToCart
+        });
+      }
+    });
+
+    function addToCart(product) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'api/add_to_cart.php', true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          // Xử lý phản hồi từ server (cập nhật giỏ hàng)
+          alert("Đã thêm vào giỏ hàng!");
+          location.reload();  // Tải lại trang để cập nhật giỏ hàng
+        }
+      };
+      xhr.send(`id=${product.id}&name=${encodeURIComponent(product.name)}&price=${product.price}&quantity=${product.quantity}`);
+    }
+
+  </script>
 
   <section id="newsletter" class="section-p1 section-m1">
     <div class="newstext">
@@ -306,13 +342,15 @@ if ($product) {
     <ion-icon name="arrow-up" aria-hidden="true"></ion-icon>
   </a>
 
-  <script src="./assets/js/script.js" defer></script>
-
   <!-- 
     - ionicon link
   -->
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  
+  <script src="./assets/js/script.js" defer></script>
+
+
   <script>
     function changeProductDetails(imageUrl, variantName, price, stock, sales) {
       // Thay đổi ảnh chính
@@ -325,8 +363,6 @@ if ($product) {
       document.getElementById("sales-count").innerText = "Đã bán: " + sales;
     }
   </script>
-
-
 
 </body>
 

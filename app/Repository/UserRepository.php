@@ -1,62 +1,63 @@
 <?php
-
-require_once __DIR__ . '/../../config/config.php';
-
 class UserRepository {
-    private $pdo;
+    private $conn;
 
-    public function __construct() {
-        global $pdo;
-        $this->pdo = $pdo;
-    }
-
-    // Hàm đăng ký người dùng
-    public function createUser($user) {
-        try {
-            // Kiểm tra email đã tồn tại chưa
-            $stmt = $this->pdo->prepare("SELECT id FROM users WHERE email = :email");
-            $stmt->bindParam(':email', $user->getEmail());
-            $stmt->execute();
-
-            if ($stmt->rowCount() > 0) {
-                return "Email đã tồn tại!";
-            }
-
-            // Thêm user vào database
-            $stmt = $this->pdo->prepare("INSERT INTO users (fullName, email, password, phone, role) 
-                                         VALUES (:fullName, :email, :password, :phone, :role)");
-            $stmt->bindParam(':fullName', $user->getFullName());
-            $stmt->bindParam(':email', $user->getEmail());
-            $stmt->bindParam(':password', $user->getPassword()); // Đã hash trước đó
-            $stmt->bindParam(':phone', $user->getPhone());
-            $stmt->bindParam(':role', $user->getRole());
-
-            if ($stmt->execute()) {
-                return true; // Thành công
-            } else {
-                return "Lỗi khi đăng ký!";
-            }
-        } catch (PDOException $e) {
-            return "Lỗi: " . $e->getMessage();
+    public function __construct($pdo) {
+        if (!$pdo) {
+            die("Lỗi: Kết nối database thất bại. Kiểm tra lại config.php.");
         }
+        $this->conn = $pdo;
     }
 
-    public function checkLogin($email, $password) {
-        try {
-            $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
-            $stmt->bindParam(':email', $email);
-            $stmt->execute();
-    
+    // Kiểm tra email tồn tại
+    public function isEmailExists($email) {
+        $query = "SELECT * FROM users WHERE Email = :email";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":email", $email);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    // Đăng ký người dùng mới
+    public function registerUser($fullName, $email, $password, $phone, $role = "user") {
+        if ($this->isEmailExists($email)) {
+            return false;
+        }
+
+        $query = "INSERT INTO users (FullName, Email, Password, Phone, Role) 
+                  VALUES (:fullName, :email, :password, :phone, :role)";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":fullName", $fullName);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":password", $password);
+        $stmt->bindParam(":phone", $phone);
+        $stmt->bindParam(":role", $role);
+
+        return $stmt->execute();
+    }
+
+    // Hàm đăng nhập
+    public function loginUser($email, $password) {
+        $query = "SELECT * FROM users WHERE Email = :email";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":email", $email);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 1) {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-            if ($user && password_verify($password, $user['password'])) {
-                return $user; // Trả về thông tin user nếu đúng mật khẩu
+
+            // Kiểm tra mật khẩu đã hash
+            if (password_verify($password, $user["Password"])) {
+                return $user; // Trả về thông tin user nếu đăng nhập thành công
+            } else {
+                error_log("Lỗi đăng nhập: Mật khẩu không đúng cho email $email");
             }
-            return false; // Đăng nhập thất bại
-        } catch (PDOException $e) {
-            return "Lỗi: " . $e->getMessage();
+        } else {
+            error_log("Lỗi đăng nhập: Email không tồn tại $email");
         }
+
+        return false; // Đăng nhập thất bại
     }
-    
 }
 ?>

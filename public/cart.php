@@ -1,3 +1,24 @@
+<?php
+// Bắt đầu session để lưu trữ giỏ hàng
+session_start();
+
+// Kiểm tra nếu giỏ hàng đã được tạo ra trong session
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+// Hàm tính subtotal của mỗi sản phẩm
+function calculateSubtotal($product)
+{
+    return $product['price'] * $product['quantity'];
+}
+
+// Tính tổng giỏ hàng
+$total = 0;
+foreach ($_SESSION['cart'] as $product) {
+    $total += calculateSubtotal($product);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -44,11 +65,6 @@
 
     <?php include 'header.php'; ?>
 
-    <section id="page-header" class="about-header">
-        <h2>#let's_talk</h2>
-        <p>LEAVE A MESSAGE, We love to hear from you!</p>
-    </section>
-
     <section id="cart" class="section-p1">
         <table width="100%">
             <thead>
@@ -56,36 +72,36 @@
                     <td>Remove</td>
                     <td>Image</td>
                     <td>Product</td>
+                    <td>Variant</td> <!-- Biến thể sản phẩm -->
                     <td>Price</td>
-                    <td>Quantidy</td>
+                    <td>Quantity</td>
                     <td>Subtotal</td>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><a href="#"></a><i class="fa-regular fa-circle-xmark"></i></td>
-                    <td><img src="img/products/f1.jpg" alt=""></td>
-                    <td>Cartoon Astronaut T-Shirts</td>
-                    <td>$118.19</td>
-                    <td><input type="number" value="1"></td>
-                    <td>$118.19</td>
-                </tr>
-                <tr>
-                    <td><a href="#"></a><i class="fa-regular fa-circle-xmark"></i></td>
-                    <td><img src="img/products/f2.jpg" alt=""></td>
-                    <td>Cartoon Astronaut T-Shirts</td>
-                    <td>$118.19</td>
-                    <td><input type="number" value="1"></td>
-                    <td>$118.19</td>
-                </tr>
-                <tr>
-                    <td><a href="#"></a><i class="fa-regular fa-circle-xmark"></i></td>
-                    <td><img src="img/products/f3.jpg" alt=""></td>
-                    <td>Cartoon Astronaut T-Shirts</td>
-                    <td>$118.19</td>
-                    <td><input type="number" value="1"></td>
-                    <td>$118.19</td>
-                </tr>
+                <?php
+                if (!empty($_SESSION['cart'])):
+                    foreach ($_SESSION['cart'] as $product_id => $product): ?>
+                        <tr>
+                            <td><a href="remove_from_cart.php?id=<?php echo $product_id; ?>"><i
+                                        class="fa-regular fa-circle-xmark"></i></a></td>
+                            <td><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>"></td>
+                            <td><?php echo $product['name']; ?></td>
+                            <td><?php echo $product['variant']; ?></td> <!-- Biến thể -->
+                            <td><?php echo number_format($product['price'], 0, ',', '.'); ?> VNĐ</td>
+                            <td>
+                                <input type="number" value="<?php echo $product['quantity']; ?>" min="1" max="10"
+                                    onchange="updateQuantity(<?php echo $product_id; ?>, this.value)">
+                            </td>
+                            <td><?php echo number_format(calculateSubtotal($product), 0, ',', '.'); ?> VNĐ</td>
+                            <!-- Subtotal -->
+                        </tr>
+                    <?php endforeach;
+                else: ?>
+                    <tr>
+                        <td colspan="7">Giỏ hàng của bạn hiện tại trống.</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </section>
@@ -104,7 +120,8 @@
             <table>
                 <tr>
                     <td>Cart Subtotal</td>
-                    <td>$335</td>
+                    <td><?php echo number_format($total, 0, ',', '.'); ?> VNĐ</td>
+                    <!-- Cập nhật subtotal từ các sản phẩm -->
                 </tr>
                 <tr>
                     <td>Shipping</td>
@@ -112,12 +129,33 @@
                 </tr>
                 <tr>
                     <td><strong>Total</strong></td>
-                    <td><strong>$335</strong></td>
+                    <td><strong><?php echo number_format($total, 0, ',', '.'); ?> VNĐ</strong></td>
                 </tr>
             </table>
             <button class="normal">Proceed to checkout</button>
         </div>
     </section>
+
+    <script>
+        // Cập nhật số lượng trong giỏ hàng
+        function updateQuantity(productId, quantity) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "api/update_cart.php", true); // Đảm bảo gửi đến đúng file update_cart.php
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.status === "success") {
+                        location.reload();  // Reload trang để cập nhật giỏ hàng
+                    } else {
+                        alert(response.message);  // Hiển thị thông báo lỗi nếu có
+                    }
+                }
+            };
+            xhr.send("product_id=" + productId + "&quantity=" + quantity);
+        }
+
+    </script>
 
     <section id="newsletter" class="section-p1 section-m1">
         <div class="newstext">
